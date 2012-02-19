@@ -5,14 +5,19 @@ require 'workhorse'
 require 'thor'
 
 class WorkhorseCLI < Thor
+  # по умолчанию выполняется таск summary
   default_task :summary
   
+  # описание таска - выводится и в общем списке тасков, и в хелпе по данному таску
   desc :gmail, 'Get unread emails from GMail'
+  # строковые параметры mailbox и password с описанием
   method_option :mailbox,   type: :string, desc: 'A mailbox address to fetch from'
   method_option :password,  type: :string, desc: 'A password for that mailbox'
+  # описания параметров выводятся в хелпе по таску
   def gmail
     puts
-    say 'Unread emails:'
+    # say - синтаксический сахар для puts с поддержкой разных цветов
+    say 'Unread emails:', :green
     print_results Workhorse.gmail(options[:mailbox], options[:password])
   end
   
@@ -20,21 +25,26 @@ class WorkhorseCLI < Thor
   method_option :repo, type: :string, desc: 'A repository name'
   def github
     puts
-    say 'Last commits:'
+    say 'Last commits:', :green
     print_results Workhorse.github(options[:repo])
   end
   
   desc :lenta, 'Get 5 latest news titles from lenta.ru'
   def lenta
     puts
-    say 'Last 5 news on lenta.ru:'
+    say 'Last 5 news on lenta.ru:', :green
     print_results Workhorse.lenta_ru
   end
   
-  desc :summary, 'Get all info at once'
-  method_option :quiet, type: :boolean, desc: 'Do not ask any questions, output everything'
+  desc :summary, 'Get all info at once, options for other tasks can also be passed here'
+  # в method_option также можно задавать алиасы, добавим ключ -q как синоним --quiet
+  method_option :quiet, type: :boolean, aliases: '-q', desc: 'Do not ask any questions, output everything'
   def summary
+    # метод yes? выводит пользователю вопрос, и возвращает
+    # true при положительном ответе и, соответственно, false при отрицательном
+    # метод no? действует наоборот
     if options[:quiet] || yes?('Want emails?')
+      # метод invoke запускает указанный таск, при этом ему также будут доступны опции, переданные в текущий таск
       invoke :gmail
     end
     
@@ -57,8 +67,10 @@ private
       row + hash.values
     end
     
+    # метод print_table принимает массив из массивов, и выводит его в виде отформатированной таблицы
     print_table rows
   end
 end
 
+# запускаем обработку входных параметров
 WorkhorseCLI.start
