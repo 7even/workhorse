@@ -55,7 +55,7 @@ module Workhorse
       end
     end
     
-    # получение 5 последних новостей с lenta.ru
+    # получение заголовков 5 последних новостей с lenta.ru
     def lenta_ru
       page = open('http://lenta.ru/rss/')
       doc  = Nokogiri::XML(page)
@@ -63,9 +63,7 @@ module Workhorse
       doc.xpath('//channel/item').first(5).map do |item|
         {
           title:        item.xpath('.//title').first.content,
-          date:         Time.parse(item.xpath('.//pubDate').first.content),
-          description:  item.xpath('.//description').first.content,
-          categories:   item.xpath('.//category').map(&:content).join(', ')
+          date:         Time.parse(item.xpath('.//pubDate').first.content)
         }
       end
     end

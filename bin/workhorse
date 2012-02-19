@@ -1,4 +1,40 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby
 
 $LOAD_PATH << File.expand_path('../../lib', __FILE__)
 require 'workhorse'
+require 'thor'
+
+class WorkhorseCLI < Thor
+  desc 'gmail', 'Get unread emails from GMail'
+  method_option :mailbox,   type: :string, desc: 'A mailbox address to fetch from'
+  method_option :password,  type: :string, desc: 'A password for that mailbox'
+  def gmail
+    print_results Workhorse.gmail(options[:mailbox], options[:password])
+  end
+  
+  desc 'github', 'Get 5 latest commits from a repo on github'
+  method_option :repo, type: :string, desc: 'A repository name'
+  def github
+    print_results Workhorse.github(options[:repo])
+  end
+  
+  desc 'lenta', 'Get 5 latest news titles from lenta.ru'
+  def lenta
+    print_results Workhorse.lenta_ru
+  end
+  
+private
+  # вывод отформатированной таблицы в STDOUT
+  def print_results(data)
+    rows = data.map do |hash|
+      row = []
+      # выводим все даты в удобочитаемом формате
+      row << hash.delete(:date).strftime('%d.%m.%Y %H:%M:%S')
+      row + hash.values
+    end
+    
+    print_table rows
+  end
+end
+
+WorkhorseCLI.start
