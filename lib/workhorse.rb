@@ -50,7 +50,7 @@ module Workhorse
         {
           committer:  committer.name,
           date:       Time.parse(committer.date),
-          message:    commit.message
+          message:    commit.message.split("\n").first # нам достаточно заголовка коммита
         }
       end
     end
@@ -62,8 +62,8 @@ module Workhorse
       
       doc.xpath('//channel/item').first(5).map do |item|
         {
-          title:        item.xpath('.//title').first.content,
-          date:         Time.parse(item.xpath('.//pubDate').first.content)
+          title:  item.xpath('.//title').first.content,
+          date:   Time.parse(item.xpath('.//pubDate').first.content)
         }
       end
     end

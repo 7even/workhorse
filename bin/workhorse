@@ -5,22 +5,46 @@ require 'workhorse'
 require 'thor'
 
 class WorkhorseCLI < Thor
-  desc 'gmail', 'Get unread emails from GMail'
+  default_task :summary
+  
+  desc :gmail, 'Get unread emails from GMail'
   method_option :mailbox,   type: :string, desc: 'A mailbox address to fetch from'
   method_option :password,  type: :string, desc: 'A password for that mailbox'
   def gmail
+    puts
+    say 'Unread emails:'
     print_results Workhorse.gmail(options[:mailbox], options[:password])
   end
   
-  desc 'github', 'Get 5 latest commits from a repo on github'
+  desc :github, 'Get 5 latest commits from a repo on github'
   method_option :repo, type: :string, desc: 'A repository name'
   def github
+    puts
+    say 'Last commits:'
     print_results Workhorse.github(options[:repo])
   end
   
-  desc 'lenta', 'Get 5 latest news titles from lenta.ru'
+  desc :lenta, 'Get 5 latest news titles from lenta.ru'
   def lenta
+    puts
+    say 'Last 5 news on lenta.ru:'
     print_results Workhorse.lenta_ru
+  end
+  
+  desc :summary, 'Get all info at once'
+  method_option :quiet, type: :boolean, desc: 'Do not ask any questions, output everything'
+  def summary
+    if options[:quiet] || yes?('Want emails?')
+      invoke :gmail
+    end
+    
+    if options[:quiet] || yes?('Want commits?')
+      invoke :github
+    end
+    
+    if options[:quiet] || yes?('Want news?')
+      invoke :lenta
+    end
   end
   
 private
