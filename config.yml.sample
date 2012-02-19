@@ -1,0 +1,6 @@
+gmail:
+  mailbox:  'user@gmail.com'
+  password: 'secret'
+
+github:
+  repo:     'rails/rails'
