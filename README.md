@@ -12,6 +12,7 @@ $ git clone git://github.com/7even/workhorse.git
 
 ``` bash
 $ cd ./workhorse
+$ bundle
 $ cp config.yml.sample config.yml
 # открываем config.yml и вписываем свои данные
 $ bin/workhorse
