@@ -1,3 +1,5 @@
+source :rubygems
+
 # для CLI
 gem 'thor'
 
