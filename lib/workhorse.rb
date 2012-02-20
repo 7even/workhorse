@@ -18,9 +18,11 @@ module Workhorse
       password  ||= config['gmail']['password']
       
       begin
+        # создаем соединение с GMail
         gmail = Gmail.connect(mailbox, password)
         
         if gmail.logged_in?
+          # если авторизация прошла успешно, берем письма
           gmail.inbox.emails(:unread).map do |email|
             from = email.from.first
             {
@@ -30,9 +32,11 @@ module Workhorse
             }
           end
         else
+          # если авторизоваться не удалось, бросаем исключение
           raise ArgumentError, 'Email and/or password were incorrect.'
         end
       ensure
+        # в обязательном порядке делаем логаут
         gmail.logout
       end
     end
@@ -50,16 +54,19 @@ module Workhorse
         {
           committer:  committer.name,
           date:       Time.parse(committer.date),
-          message:    commit.message.split("\n").first # нам достаточно заголовка коммита
+          message:    commit.message.split("\n").first # нам достаточно заголовка сообщения
         }
       end
     end
     
     # получение заголовков 5 последних новостей с lenta.ru
     def lenta_ru
+      # получаем XML-документ
       page = open('http://lenta.ru/rss/')
+      # и отправляем его в nokogiri
       doc  = Nokogiri::XML(page)
       
+      # каждая нода, найденная по //channel/item - отдельная новость
       doc.xpath('//channel/item').first(5).map do |item|
         {
           title:  item.xpath('.//title').first.content,

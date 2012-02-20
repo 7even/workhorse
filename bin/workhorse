@@ -18,6 +18,7 @@ class WorkhorseCLI < Thor
     puts
     # say - синтаксический сахар для puts с поддержкой разных цветов
     say 'Unread emails:', :green
+    # опции, переданные в таск из командной строки, доступны в хэше options
     print_results Workhorse.gmail(options[:mailbox], options[:password])
   end
   
@@ -42,7 +43,7 @@ class WorkhorseCLI < Thor
   def summary
     # метод yes? выводит пользователю вопрос, и возвращает
     # true при положительном ответе и, соответственно, false при отрицательном
-    # метод no? действует наоборот
+    # (кстати, метод no? действует наоборот)
     if options[:quiet] || yes?('Want emails?')
       # метод invoke запускает указанный таск, при этом ему также будут доступны опции, переданные в текущий таск
       invoke :gmail
